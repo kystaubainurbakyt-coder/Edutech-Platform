@@ -1,0 +1,56 @@
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(120) NOT NULL,
+  phone VARCHAR(32) NOT NULL UNIQUE,
+  email VARCHAR(160) UNIQUE,
+  password_hash TEXT NOT NULL,
+  role VARCHAR(20) NOT NULL DEFAULT 'user',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS courses (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(180) NOT NULL,
+  instructor VARCHAR(120) NOT NULL,
+  category VARCHAR(80) NOT NULL,
+  level VARCHAR(20) NOT NULL,
+  price NUMERIC(10, 2) NOT NULL DEFAULT 0,
+  description TEXT NOT NULL,
+  video_url TEXT NOT NULL,
+  thumbnail TEXT,
+  image TEXT,
+  accent_color VARCHAR(30),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS lessons (
+  id SERIAL PRIMARY KEY,
+  course_id INTEGER NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  lesson_order INTEGER NOT NULL,
+  title VARCHAR(180) NOT NULL,
+  duration VARCHAR(40) NOT NULL,
+  video_url TEXT NOT NULL,
+  summary TEXT NOT NULL,
+  task_question TEXT NOT NULL,
+  task_options JSONB NOT NULL,
+  task_correct_answer TEXT NOT NULL,
+  task_explanation TEXT NOT NULL,
+  task_challenge TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS enrollments (
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  course_id INTEGER NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (user_id, course_id)
+);
+
+CREATE TABLE IF NOT EXISTS lesson_progress (
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  course_id INTEGER NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  lesson_id INTEGER NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
+  watched BOOLEAN NOT NULL DEFAULT FALSE,
+  completed BOOLEAN NOT NULL DEFAULT FALSE,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (user_id, lesson_id)
+);
