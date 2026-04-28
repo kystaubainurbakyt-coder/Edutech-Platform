@@ -7,6 +7,21 @@ import { normalizeCoursePayload, seedCourses } from "./seed.js";
 
 loadEnv();
 
+
+const cors = require('cors');
+const express = require('express');
+const app = express();
+
+// CORS-ты қосу
+app.use(cors({
+    origin: '*', // Әзірге барлық доменге рұқсат береміз
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));
+
+app.use(express.json());
+// ... қалған кодтарың
+
 const PORT = Number(process.env.PORT ?? 4000);
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "Admin12345!";
 
